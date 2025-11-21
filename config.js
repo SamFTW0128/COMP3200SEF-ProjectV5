@@ -1,5 +1,4 @@
 // frontend/config.js
-// During local dev:
-const API_BASE = 'http://localhost:3000';
-// After deploy, change to e.g.
-// const API_BASE = 'https://cottonwar-backend.onrender.com';
+const API_BASE = 'https://comp3200sef-projectv2-backend-1.onrender.com';
+
+
