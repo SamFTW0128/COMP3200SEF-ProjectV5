@@ -1,0 +1,708 @@
+/* Admin.html - System Administration Portal */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodTrack - Admin Portal</title>
+    <style>
+        :root {
+            --color-primary: #ff6b35;
+            --color-primary-hover: #ff5722;
+            --color-success: #4caf50;
+            --color-warning: #ffc107;
+            --color-danger: #f44336;
+            --color-bg: #fff8f0;
+            --color-surface: #ffffff;
+            --color-text: #2d1810;
+            --color-text-secondary: #8b6f47;
+            --color-border: #ffe4cc;
+            --shadow-sm: 0 2px 4px rgba(255, 107, 53, 0.1);
+            --shadow-md: 0 4px 8px rgba(255, 107, 53, 0.15);
+            --shadow-lg: 0 8px 16px rgba(255, 107, 53, 0.2);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff8f0 0%, #ffe8d6 50%, #ffd4b3 100%);
+            background-attachment: fixed;
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5eb 100%);
+            border-bottom: 2px solid #ffb380;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffa726 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-logout {
+            padding: 0.75rem 1.5rem;
+            background: rgba(139, 111, 71, 0.1);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(139, 111, 71, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
+            border: 2px solid #ffe4cc;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card.success { border-color: #4caf50; background: linear-gradient(135deg, #ffffff 0%, #f1f8f4 100%); }
+        .kpi-card.warning { border-color: #ffc107; background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%); }
+        .kpi-card.danger { border-color: #f44336; background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%); }
+
+        .kpi-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-label {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ffe4cc;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab:hover {
+            color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-table {
+            width: 100%;
+            background: white;
+            border: 2px solid #ffe4cc;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe4cc 100%);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-text);
+            border-bottom: 2px solid #ffe4cc;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #ffe4cc;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 228, 204, 0.1);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #f57c00; }
+        .status-preparing { background: rgba(255, 107, 53, 0.2); color: var(--color-primary); }
+        .status-ready { background: rgba(33, 150, 243, 0.2); color: #1976d2; }
+        .status-delivering { background: rgba(156, 39, 176, 0.2); color: #7b1fa2; }
+        .status-delivered { background: rgba(76, 175, 80, 0.2); color: var(--color-success); }
+        .status-cancelled { background: rgba(244, 67, 54, 0.2); color: var(--color-danger); }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--color-text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .data-table {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⚙️</div>
+                <span>FoodTrack Admin</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>System Dashboard 📊</h1>
+            <p style="color: var(--color-text-secondary);">Monitor and manage the entire platform</p>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-value" id="totalUsers">0</div>
+                <div class="kpi-label">Total Users</div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon">🔥</div>
+                <div class="kpi-value" id="activeOrders">0</div>
+                <div class="kpi-label">Active Orders</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-icon">💰</div>
+                <div class="kpi-value" id="totalRevenue">$0</div>
+                <div class="kpi-label">Total Revenue</div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-value" id="systemHealth">100%</div>
+                <div class="kpi-label">System Health</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('users')">👥 Users</button>
+            <button class="tab" onclick="switchTab('orders')">📦 Orders</button>
+            <button class="tab" onclick="switchTab('restaurants')">🏪 Restaurants</button>
+            <button class="tab" onclick="switchTab('riders')">🚴 Riders</button>
+        </div>
+
+        <div id="usersTab" class="tab-content active">
+            <h2 class="section-title">
+                <span>User Management</span>
+            </h2>
+            
+            <h3 style="margin: 1.5rem 0 1rem; color: var(--color-text);">Customers</h3>
+            <div class="data-table">
+                <table id="customersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Registered</th>
+                            <th>Total Orders</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: var(--color-text);">Restaurants</h3>
+            <div class="data-table">
+                <table id="restaurantsUsersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Registered</th>
+                            <th>Total Orders</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: var(--color-text);">Riders</h3>
+            <div class="data-table">
+                <table id="ridersUsersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Registered</th>
+                            <th>Total Deliveries</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ordersTab" class="tab-content">
+            <h2 class="section-title">All Orders</h2>
+            <div class="data-table">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Rider</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="restaurantsTab" class="tab-content">
+            <h2 class="section-title">Restaurant Management</h2>
+            <div id="restaurantsGrid" style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div>
+        </div>
+
+        <div id="ridersTab" class="tab-content">
+            <h2 class="section-title">Rider Management</h2>
+            <div id="ridersGrid" style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="storage.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        function checkAuth() {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function loadKPIs() {
+            const users = getUsers();
+            const orders = getOrders();
+            
+            const totalUsers = (users.customers?.length || 0) + (users.restaurants?.length || 0) + (users.riders?.length || 0);
+            document.getElementById('totalUsers').textContent = totalUsers;
+            
+            const activeOrders = orders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled').length;
+            document.getElementById('activeOrders').textContent = activeOrders;
+            
+            const revenue = orders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('totalRevenue').textContent = `$${revenue.toFixed(2)}`;
+        }
+
+        function loadUsers() {
+            const users = getUsers();
+            const orders = getOrders();
+            
+            const customersTable = document.getElementById('customersTable').querySelector('tbody');
+            const customers = users.customers || [];
+            if (customers.length === 0) {
+                customersTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No customers registered</td></tr>';
+            } else {
+                customersTable.innerHTML = customers.map(c => {
+                    const orderCount = orders.filter(o => o.customerId === c.id).length;
+                    return `
+                        <tr>
+                            <td>${escapeHtml(c.id)}</td>
+                            <td>${escapeHtml(c.name)}</td>
+                            <td>${new Date(c.registeredAt || Date.now()).toLocaleDateString()}</td>
+                            <td>${orderCount}</td>
+                            <td><button class="btn btn-danger" onclick="deleteUser('customer', '${c.id}')">Delete</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            const restaurantsTable = document.getElementById('restaurantsUsersTable').querySelector('tbody');
+            const restaurants = users.restaurants || [];
+            if (restaurants.length === 0) {
+                restaurantsTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No restaurants registered</td></tr>';
+            } else {
+                restaurantsTable.innerHTML = restaurants.map(r => {
+                    const orderCount = orders.filter(o => o.restaurantId === r.id).length;
+                    return `
+                        <tr>
+                            <td>${escapeHtml(r.id)}</td>
+                            <td>${escapeHtml(r.name)}</td>
+                            <td>${new Date(r.registeredAt || Date.now()).toLocaleDateString()}</td>
+                            <td>${orderCount}</td>
+                            <td><button class="btn btn-danger" onclick="deleteUser('restaurant', '${r.id}')">Delete</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            const ridersTable = document.getElementById('ridersUsersTable').querySelector('tbody');
+            const riders = users.riders || [];
+            if (riders.length === 0) {
+                ridersTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No riders registered</td></tr>';
+            } else {
+                ridersTable.innerHTML = riders.map(r => {
+                    const deliveryCount = orders.filter(o => o.riderId === r.id && o.status === 'Delivered').length;
+                    return `
+                        <tr>
+                            <td>${escapeHtml(r.id)}</td>
+                            <td>${escapeHtml(r.name)}</td>
+                            <td>${new Date(r.registeredAt || Date.now()).toLocaleDateString()}</td>
+                            <td>${deliveryCount}</td>
+                            <td><button class="btn btn-danger" onclick="deleteUser('rider', '${r.id}')">Delete</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function loadOrders() {
+            const orders = getOrders().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const table = document.getElementById('ordersTable').querySelector('tbody');
+            
+            if (orders.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No orders yet</td></tr>';
+                return;
+            }
+            
+            table.innerHTML = orders.map(o => `
+                <tr>
+                    <td>${escapeHtml(o.id)}</td>
+                    <td>${escapeHtml(o.customerName)}</td>
+                    <td>${escapeHtml(o.restaurantName)}</td>
+                    <td>${escapeHtml(o.riderName || 'N/A')}</td>
+                    <td><span class="status-badge status-${o.status.toLowerCase()}">${escapeHtml(o.status)}</span></td>
+                    <td>$${o.total.toFixed(2)}</td>
+                    <td>${new Date(o.createdAt).toLocaleString()}</td>
+                    <td><button class="btn btn-danger" onclick="deleteOrder('${o.id}')">Cancel</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function loadRestaurants() {
+            const users = getUsers();
+            const orders = getOrders();
+            const restaurants = users.restaurants || [];
+            const grid = document.getElementById('restaurantsGrid');
+            
+            if (restaurants.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No restaurants registered</h3></div>';
+                return;
+            }
+            
+            grid.innerHTML = restaurants.map(r => {
+                const orderCount = orders.filter(o => o.restaurantId === r.id).length;
+                const revenue = orders.filter(o => o.restaurantId === r.id && o.status === 'Delivered').reduce((sum, o) => sum + o.total, 0);
+                return `
+                    <div style="background: white; border: 2px solid #ffe4cc; border-radius: var(--radius-md); padding: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">${escapeHtml(r.name)}</h3>
+                        <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">📍 ${escapeHtml(r.location || 'Location not set')}</p>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                            <div style="background: rgba(255, 228, 204, 0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <strong>${orderCount}</strong><br>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Orders</span>
+                            </div>
+                            <div style="background: rgba(255, 228, 204, 0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <strong>$${revenue.toFixed(2)}</strong><br>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Revenue</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                            Menu: ${(r.menu || []).length} items
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadRiders() {
+            const users = getUsers();
+            const orders = getOrders();
+            const riders = users.riders || [];
+            const grid = document.getElementById('ridersGrid');
+            
+            if (riders.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No riders registered</h3></div>';
+                return;
+            }
+            
+            grid.innerHTML = riders.map(r => {
+                const deliveries = orders.filter(o => o.riderId === r.id && o.status === 'Delivered').length;
+                const earnings = deliveries * 5;
+                return `
+                    <div style="background: white; border: 2px solid #ffe4cc; border-radius: var(--radius-md); padding: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">${escapeHtml(r.name)}</h3>
+                        <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">${r.available ? '🟢 Available' : '🔴 Offline'}</p>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                            <div style="background: rgba(255, 228, 204, 0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <strong>${deliveries}</strong><br>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Deliveries</span>
+                            </div>
+                            <div style="background: rgba(255, 228, 204, 0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <strong>$${earnings.toFixed(2)}</strong><br>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Earnings</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                            ⭐ 5.0 Rating
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteUser(role, userId) {
+            if (!confirm(`Are you sure you want to delete this ${role}?`)) return;
+            
+            const users = getUsers();
+            users[role + 's'] = users[role + 's'].filter(u => u.id !== userId);
+            setUsers(users);
+            toast(`✅ ${role} deleted`);
+            loadUsers();
+            loadKPIs();
+        }
+
+        function deleteOrder(orderId) {
+            if (!confirm('Are you sure you want to cancel this order?')) return;
+            
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'Cancelled';
+                setOrders(orders);
+                toast('✅ Order cancelled');
+                loadOrders();
+                loadKPIs();
+            }
+        }
+
+        function logout() {
+            setCurrentUser(null);
+            window.location.href = 'index.html';
+        }
+
+        if (checkAuth()) {
+            loadKPIs();
+            loadUsers();
+            loadOrders();
+            loadRestaurants();
+            loadRiders();
+            
+            setInterval(() => {
+                loadKPIs();
+                loadOrders();
+            }, 10000);
+        }
+    </script>
+</body>
+</html>

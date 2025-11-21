@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodTrack - Welcome</title>
+    <style>
+        :root {
+            --color-primary: #ff6b35;
+            --color-primary-hover: #ff5722;
+            --color-primary-dark: #e64a19;
+            --color-success: #4caf50;
+            --color-warning: #ffc107;
+            --color-danger: #f44336;
+            --color-bg: #fff8f0;
+            --color-surface: #ffffff;
+            --color-text: #2d1810;
+            --color-text-secondary: #8b6f47;
+            --color-border: #ffb380;
+            --shadow-sm: 0 2px 4px rgba(255, 107, 53, 0.1);
+            --shadow-md: 0 4px 8px rgba(255, 107, 53, 0.15);
+            --shadow-lg: 0 8px 16px rgba(255, 107, 53, 0.2);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffe8d6 0%, #ffd4b3 50%, #ffb380 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container { max-width: 500px; width: 100%; }
+
+        .logo-header { text-align: center; margin-bottom: 2rem; }
+        .logo-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffa726 100%);
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: white;
+            margin-bottom: 1rem;
+        }
+
+        .auth-card {
+            background: #fff;
+            border: 3px solid #ff8c42;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-btn {
+            padding: 1rem;
+            border: 2px solid #ffb380;
+            background: #fff8f0;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            color: white;
+        }
+
+        .form-tabs {
+            display: flex; gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-tab.active {
+            color: #e64a19;
+            border-bottom-color: #ff6b35;
+        }
+
+        .form-content { display: none; }
+        .form-content.active { display: block; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #ffb380;
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            border: none; color: white;
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            border: 2px solid #ffb74d;
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            background: black; padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm); color: white;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-header">
+            <div class="logo-icon">🍔</div>
+            <h1 class="logo-title">FoodTrack</h1>
+            <p class="logo-subtitle">Delicious Food, Delivered Fast</p>
+        </div>
+
+        <div class="auth-card">
+            <h2 style="text-align:center; margin-bottom:1.5rem;">Select Your Role</h2>
+
+            <div class="role-selector">
+                <button class="role-btn active" onclick="selectRole('customer', event)">🍕 Customer</button>
+                <button class="role-btn" onclick="selectRole('restaurant', event)">🏪 Restaurant</button>
+                <button class="role-btn" onclick="selectRole('rider', event)">🚴 Rider</button>
+                <button class="role-btn" onclick="selectRole('admin', event)">⚙️ Admin</button>
+            </div>
+
+            <div class="form-tabs">
+                <button class="form-tab active" onclick="switchFormTab('login', event)">Login</button>
+                <button class="form-tab" onclick="switchFormTab('register', event)">Register</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="loginForm" class="form-content active">
+                <form onsubmit="loginWithBackend(event)">
+                    <div class="form-group">
+                        <label class="form-label">User ID</label>
+                        <input type="text" class="form-input" id="loginId" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Login</button>
+                </form>
+
+                <div class="info-box" id="adminInfo" style="display:none;">
+                    <strong>🔑 Admin Demo Account</strong>
+                    ID: <b>001</b> | Pwd: <b>001</b>
+                </div>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="registerForm" class="form-content">
+                <form onsubmit="registerWithBackend(event)">
+                    <div class="form-group">
+                        <label class="form-label">User ID</label>
+                        <input type="text" class="form-input" id="registerId" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="registerName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="registerPassword" required>
+                    </div>
+
+                    <!-- Restaurant fields -->
+                    <div class="form-group" id="restaurantFields" style="display:none;">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-input" id="registerLocation">
+                    </div>
+
+                    <!-- Rider fields with emojis -->
+                    <div class="form-group" id="riderFields" style="display:none;">
+                        <label class="form-label">Delivery Method</label>
+                        <select class="form-select" id="registerDeliveryMethod">
+                            <option value="" disabled selected>Select your delivery method</option>
+                            <option value="🚴 Bicycle">🚴 Bicycle</option>
+                            <option value="🏍️ Motorbike">🏍️ Motorbike</option>
+                            <option value="🛵 Scooter">🛵 Scooter</option>
+                            <option value="🚗 Car">🚗 Car</option>
+                            <option value="🚶 On Foot">🚶 On Foot</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- IMPORTANT: config.js defines API_BASE -->
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="utils.js"></script>
+
+    <script>
+        let currentRole = "customer";
+
+        function selectRole(role, evt) {
+            currentRole = role;
+
+            document.querySelectorAll(".role-btn").forEach(btn => btn.classList.remove("active"));
+            evt.target.classList.add("active");
+
+            document.getElementById("restaurantFields").style.display = role === "restaurant" ? "block" : "none";
+            document.getElementById("riderFields").style.display = role === "rider" ? "block" : "none";
+            document.getElementById("adminInfo").style.display = role === "admin" ? "block" : "none";
+        }
+
+        function switchFormTab(tab, evt) {
+            document.querySelectorAll(".form-tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".form-content").forEach(c => c.classList.remove("active"));
+
+            evt.target.classList.add("active");
+            document.getElementById(tab + "Form").classList.add("active");
+        }
+
+        function toast(msg) {
+            const box = document.getElementById("toast");
+            box.textContent = msg;
+            box.style.display = "block";
+            setTimeout(() => box.style.display = "none", 2000);
+        }
+
+        // ---- Backend registration ----
+        async function registerWithBackend(event) {
+            event.preventDefault();
+
+            const id = document.getElementById("registerId").value.trim();
+            const name = document.getElementById("registerName").value.trim();
+            const password = document.getElementById("registerPassword").value.trim();
+            const role = currentRole;
+
+            const location = document.getElementById("registerLocation")?.value.trim() || null;
+            const deliveryMethod = document.getElementById("registerDeliveryMethod")?.value || null;
+
+            if (!id || !name || !password || !role) {
+                return toast("⚠️ Please fill all required fields");
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, name, password, role, location, deliveryMethod })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    return toast("❌ " + (data.error || "Registration failed"));
+                }
+
+                // Save login session in a way compatible with storage.js + other pages
+                localStorage.setItem("authToken", data.token);
+                setCurrentUser({
+                    id: data.user.user_id,
+                    name: data.user.name,
+                    role: data.user.role
+                });
+
+                toast("🎉 Registration successful!");
+
+                setTimeout(() => {
+                    window.location.href = `${role}-refined.html`;
+                }, 800);
+            } catch (err) {
+                console.error(err);
+                toast("❌ Network error");
+            }
+        }
+
+        // ---- Backend login ----
+        async function loginWithBackend(event) {
+            event.preventDefault();
+
+            const id = document.getElementById("loginId").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+            const role = currentRole;
+
+            if (!id || !password) {
+                return toast("⚠️ Please enter ID and password");
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, password, role })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    return toast("❌ " + (data.error || "Login failed"));
+                }
+
+                localStorage.setItem("authToken", data.token);
+                setCurrentUser({
+                    id: data.user.user_id,
+                    name: data.user.name,
+                    role: data.user.role
+                });
+
+                toast("✅ Login successful");
+
+                setTimeout(() => {
+                    window.location.href = `${data.user.role}-refined.html`;
+                }, 500);
+            } catch (err) {
+                console.error(err);
+                toast("❌ Network error");
+            }
+        }
+    </script>
+</body>
+</html>

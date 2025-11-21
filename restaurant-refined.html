@@ -1,0 +1,857 @@
+/* Restaurant.html - Restaurant Management Portal */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodTrack - Restaurant Portal</title>
+    <style>
+        :root {
+            --color-primary: #ff6b35;
+            --color-primary-hover: #ff5722;
+            --color-success: #4caf50;
+            --color-warning: #ffc107;
+            --color-danger: #f44336;
+            --color-bg: #fff8f0;
+            --color-surface: #ffffff;
+            --color-text: #2d1810;
+            --color-text-secondary: #8b6f47;
+            --color-border: #ffe4cc;
+            --shadow-sm: 0 2px 4px rgba(255, 107, 53, 0.1);
+            --shadow-md: 0 4px 8px rgba(255, 107, 53, 0.15);
+            --shadow-lg: 0 8px 16px rgba(255, 107, 53, 0.2);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff8f0 0%, #ffe8d6 50%, #ffd4b3 100%);
+            background-attachment: fixed;
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5eb 100%);
+            border-bottom: 2px solid #ffb380;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffa726 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-logout {
+            padding: 0.75rem 1.5rem;
+            background: rgba(139, 111, 71, 0.1);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(139, 111, 71, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
+            border: 2px solid #ffe4cc;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ffe4cc;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab:hover {
+            color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+        }
+
+        .order-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .order-card {
+            background: white;
+            border: 2px solid #ffe4cc;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .order-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .order-id {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #f57c00; }
+        .status-preparing { background: rgba(255, 107, 53, 0.2); color: var(--color-primary); }
+        .status-ready { background: rgba(33, 150, 243, 0.2); color: #1976d2; }
+
+        .order-items {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 228, 204, 0.2);
+            border-radius: var(--radius-sm);
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+            color: white;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .menu-item-card {
+            background: white;
+            border: 2px solid #ffe4cc;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .menu-item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .menu-item-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .menu-item-info {
+            padding: 1rem;
+        }
+
+        .menu-item-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item-desc {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .menu-item-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .menu-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.75rem;
+            color: var(--color-text);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🏪</div>
+                <span id="restaurantName">FoodTrack Restaurant</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Restaurant Dashboard 🍽️</h1>
+            <p style="color: var(--color-text-secondary);">Manage your menu and orders</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRevenue">$0</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="avgRating">4.5</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="activeOrders">0</div>
+                <div class="stat-label">Active Orders</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('orders')">📋 Orders</button>
+            <button class="tab" onclick="switchTab('menu')">🍔 Menu Management</button>
+        </div>
+
+        <div id="ordersTab" class="tab-content active">
+            <h2 class="section-title">Incoming Orders</h2>
+            <div class="order-grid" id="orderGrid"></div>
+        </div>
+
+        <div id="menuTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 class="section-title" style="margin: 0;">Your Menu</h2>
+                <button class="btn btn-primary" onclick="openAddDishModal()">+ Add Dish</button>
+            </div>
+            <div class="menu-grid" id="menuGrid"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="dishModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Dish</h2>
+            </div>
+            <form id="dishForm">
+                <div class="form-group">
+                    <label class="form-label">Dish Name *</label>
+                    <input type="text" class="form-input" id="dishName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="dishDesc"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price ($) *</label>
+                    <input type="number" step="0.01" class="form-input" id="dishPrice" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="dishCategory">
+                        <option value="Main Course">Main Course</option>
+                        <option value="Appetizers">Appetizers</option>
+                        <option value="Desserts">Desserts</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Sides">Sides</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image URL</label>
+                    <input type="text" class="form-input" id="dishImage" placeholder="https://...">
+                </div>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-danger" onclick="closeDishModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Dish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="utils.js"></script>
+    <script>
+let currentUser = null;
+        let currentEditDish = null;
+
+        function checkAuth() {
+            currentUser = getCurrentUser();
+            if (!currentUser || currentUser.role !== 'restaurant') {
+                window.location.href = 'index.html';
+                return false;
+            }
+            document.getElementById('restaurantName').textContent = currentUser.name;
+            return true;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function loadStats() {
+            const orders = getOrders().filter(o => o.restaurantId === currentUser.id);
+            const activeOrders = orders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled');
+            
+            document.getElementById('totalOrders').textContent = orders.length;
+            document.getElementById('activeOrders').textContent = activeOrders.length;
+            
+            const revenue = orders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('totalRevenue').textContent = `$${revenue.toFixed(2)}`;
+        }
+
+        function renderOrders() {
+            const orders = getOrders()
+                .filter(o => o.restaurantId === currentUser.id)
+                .filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled')
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            const grid = document.getElementById('orderGrid');
+            if (orders.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No active orders 📦</p>';
+                return;
+            }
+
+            grid.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-card-header">
+                        <span class="order-id">${escapeHtml(order.id)}</span>
+                        <span class="status-badge status-${order.status.toLowerCase()}">${escapeHtml(order.status)}</span>
+                    </div>
+                    <div style="margin-bottom: 0.75rem;">
+                        <strong>Customer:</strong> ${escapeHtml(order.customerName)}<br>
+                        <strong>Order Time:</strong> ${new Date(order.createdAt).toLocaleString()}
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.quantity}× ${escapeHtml(item.dishName)}</span>
+                                <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                        <div style="border-top: 1px solid var(--color-border); margin-top: 0.5rem; padding-top: 0.5rem;">
+                            <strong>Total: $${order.total.toFixed(2)}</strong>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        ${order.status === 'Pending' ? `
+                            <button class="btn btn-success" onclick="acceptOrder('${order.id}')">✓ Accept</button>
+                            <button class="btn btn-danger" onclick="rejectOrder('${order.id}')">✗ Reject</button>
+                        ` : ''}
+                        ${order.status === 'Preparing' ? `
+                            <button class="btn btn-primary" onclick="markReady('${order.id}')">✓ Mark as Ready</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function acceptOrder(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'Preparing';
+                setOrders(orders);
+                toast('✅ Order accepted!');
+                renderOrders();
+                loadStats();
+            }
+        }
+
+        function rejectOrder(orderId) {
+            if (!confirm('Are you sure you want to reject this order?')) return;
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'Cancelled';
+                setOrders(orders);
+                toast('Order rejected');
+                renderOrders();
+                loadStats();
+            }
+        }
+
+        function markReady(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'Ready';
+                setOrders(orders);
+                toast('✅ Order marked as ready for pickup!');
+                renderOrders();
+                loadStats();
+            }
+        }
+
+        function renderMenu() {
+            const users = getUsers();
+            const restaurant = users.restaurants.find(r => r.id === currentUser.id);
+            const menu = restaurant && restaurant.menu ? restaurant.menu : [];
+            
+            const grid = document.getElementById('menuGrid');
+            if (menu.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No menu items yet. Add your first dish! 🍽️</p>';
+                return;
+            }
+
+            grid.innerHTML = menu.map(dish => `
+                <div class="menu-item-card">
+                    <img src="${dish.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop'}" alt="${escapeHtml(dish.name)}" class="menu-item-image" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop'">
+                    <div class="menu-item-info">
+                        <div class="menu-item-name">${escapeHtml(dish.name)}</div>
+                        <div class="menu-item-desc">${escapeHtml(dish.description || '')}</div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">${escapeHtml(dish.category || 'Main Course')}</div>
+                        <div class="menu-item-price">$${(dish.price || 0).toFixed(2)}</div>
+                        <div class="menu-item-actions">
+                            <button class="btn btn-primary" onclick="editDish('${dish.id}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteDish('${dish.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddDishModal() {
+            currentEditDish = null;
+            document.getElementById('modalTitle').textContent = 'Add New Dish';
+            document.getElementById('dishForm').reset();
+            document.getElementById('dishModal').classList.add('active');
+        }
+
+        function editDish(dishId) {
+            const users = getUsers();
+            const restaurant = users.restaurants.find(r => r.id === currentUser.id);
+            currentEditDish = restaurant.menu.find(d => d.id === dishId);
+            
+            if (currentEditDish) {
+                document.getElementById('modalTitle').textContent = 'Edit Dish';
+                document.getElementById('dishName').value = currentEditDish.name;
+                document.getElementById('dishDesc').value = currentEditDish.description || '';
+                document.getElementById('dishPrice').value = currentEditDish.price;
+                document.getElementById('dishCategory').value = currentEditDish.category || 'Main Course';
+                document.getElementById('dishImage').value = currentEditDish.imageUrl || '';
+                document.getElementById('dishModal').classList.add('active');
+            }
+        }
+
+        function deleteDish(dishId) {
+            if (!confirm('Are you sure you want to delete this dish?')) return;
+            
+            const users = getUsers();
+            const restaurant = users.restaurants.find(r => r.id === currentUser.id);
+            restaurant.menu = restaurant.menu.filter(d => d.id !== dishId);
+            setUsers(users);
+            toast('✅ Dish deleted');
+            renderMenu();
+        }
+
+        function closeDishModal() {
+            document.getElementById('dishModal').classList.remove('active');
+            currentEditDish = null;
+        }
+
+        document.getElementById('dishForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const users = getUsers();
+            const restaurant = users.restaurants.find(r => r.id === currentUser.id);
+            
+            if (!restaurant.menu) restaurant.menu = [];
+            
+            const dishData = {
+                id: currentEditDish ? currentEditDish.id : 'dish' + Date.now(),
+                name: document.getElementById('dishName').value,
+                description: document.getElementById('dishDesc').value,
+                price: parseFloat(document.getElementById('dishPrice').value),
+                category: document.getElementById('dishCategory').value,
+                imageUrl: document.getElementById('dishImage').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop',
+                available: true
+            };
+            
+            if (currentEditDish) {
+                const index = restaurant.menu.findIndex(d => d.id === currentEditDish.id);
+                restaurant.menu[index] = dishData;
+                toast('✅ Dish updated!');
+            } else {
+                restaurant.menu.push(dishData);
+                toast('✅ Dish added!');
+            }
+            
+            setUsers(users);
+            closeDishModal();
+            renderMenu();
+        });
+
+        function logout() {
+            setCurrentUser(null);
+            window.location.href = 'index.html';
+        }
+
+
+        async function ensureAuthenticated(requiredRole) {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return false;
+            }
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/me`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!resp.ok) {
+                    localStorage.removeItem('authToken');
+                    setCurrentUser(null);
+                    window.location.href = 'index.html';
+                    return false;
+                }
+
+                const data = await resp.json();
+                const user = data.user;
+
+                if (requiredRole && user.role !== requiredRole) {
+                    window.location.href = 'index.html';
+                    return false;
+                }
+
+                // sync storage.js current user
+                setCurrentUser({ id: user.userId, name: user.name, role: user.role });
+
+                // Optional: set name if element exists
+                const el = document.querySelector('#current-username');
+                if (el) el.textContent = user.name;
+
+                return true;
+            } catch (err) {
+                console.error(err);
+                localStorage.removeItem('authToken');
+                setCurrentUser(null);
+                window.location.href = 'index.html';
+                return false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await ensureAuthenticated('restaurant');
+            if (!ok) return;
+            if (!checkAuth()) return;
+
+            loadStats();
+            renderOrders();
+            renderMenu();
+            
+            setInterval(() => {
+                loadStats();
+                renderOrders();
+            }, 10000);
+        });
+    
+</script>
+</body>
+</html>
